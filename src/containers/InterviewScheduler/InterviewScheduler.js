@@ -17,15 +17,19 @@ const config = {
     }
 }
 
+const defaultState = {
+    selectedDate: new Date(),
+    startTime: "12:00PM",
+    showTime: false,
+    interviewDuration: 60,
+    optionRenderer: true,
+    names: [],
+    selectedNames: [],
+    marks: {0: 15, 10: 30, 20: 45, 30: 60, 40: 75, 50: 90, 60: 105, 70: 120, 80: 135, 90: 150, 100: 165}
+};
 class InterviewScheduler extends Component {
     state = {
-        selectedDate: new Date(),
-        startTime: "12:00PM",
-        showTime: false,
-        interviewDuration: 60,
-        optionRenderer: true,
-        names: [],
-        selectedNames: []
+        ...defaultState
     }
     
     componentDidMount(){
@@ -33,9 +37,21 @@ class InterviewScheduler extends Component {
         .then((data) => {
             this.setState({names: data.data});
         });
+       
     }
 
     render(){
+
+        const sendMail = (payload) => {
+            axios.post('/mailing/sendMails', payload, config)
+            .then(response => {
+                if(response.data.status === 0)
+                    alert("Oops, some error occured");
+                else{
+                    alert(response.data.msg);
+                }
+            })
+        };
 
         //Execute booking interview process
         const ScheduleInterview = () => {
@@ -51,12 +67,18 @@ class InterviewScheduler extends Component {
                 duration: this.state.interviewDuration,
                 participantsList: selectedEmails
             };
-            console.log(this.state, payload);
-            payload = qs.stringify(payload);
-            axios.post('/bookCandidates', payload, config)
-            .then(data => {
-                console.log(data);
-            });
+            if(payload.participantsList.length >=2 ){
+                payload = qs.stringify(payload);
+                axios.post('/bookCandidates', payload, config)
+                .then(data => {
+                    alert(data.data.msg);
+                    if(window.confirm('Send E-Mail to participants?'))
+                        sendMail(payload);
+                    this.setState((prevState) => ({...defaultState, names: prevState.names}));
+                });
+            }
+            else    
+                alert('Select more than 2 participants to schedule Interview');
         };
 
         return (
@@ -101,7 +123,7 @@ class InterviewScheduler extends Component {
                                 }
                                 <div className={classes.Time}>Interview Time {this.state.startTime}</div>
                                 {!this.state.showTime &&
-                                    <button onClick={() => this.setState({showTime: true})}>Edit</button>
+                                    <div className={classes.scheduleBtn} onClick={() => this.setState({showTime: true})}>Edit</div>
                                 }
                             </div>
                         </div>
@@ -114,9 +136,9 @@ class InterviewScheduler extends Component {
                                 <div className={classes.Title}>Select Interview Duration (In Minutes)</div>
 
                                 <Slider 
-                                     min={20} defaultValue={this.state.interviewDuration} marks={{ 20: 20, 40: 40, 60: 60, 85: 100, 100: 120 }} step={null}
+                                     min={0} defaultValue={((this.state.interviewDuration/15)-1)*10} marks={this.state.marks} step={null}
                                      onChange={(newDuration)=>{
-                                        this.setState({interviewDuration: newDuration});
+                                        this.setState({interviewDuration: ((newDuration/10)+1)*15});
                                      }}
                                 />
                             </div>

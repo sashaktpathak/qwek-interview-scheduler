@@ -28,7 +28,8 @@ class Model extends Component {
         selectedDate: new Date(),
         startTime: "12:00PM",
         showTime: false,
-        interviewDuration: 60
+        interviewDuration: 60,
+        marks: {0: 15, 10: 30, 20: 45, 30: 60, 40: 75, 50: 90, 60: 105, 70: 120, 80: 135, 90: 150, 100: 165}
     }
 
     componentDidMount(){
@@ -114,13 +115,16 @@ class Model extends Component {
                 .then(response => {
                     if(response.data.status === 0)
                         alert("Oops, some error occured");
-                    else
+                    else{
                         alert(response.data.msg);
+                        this.setState({selectedNames: []});
+                    }
                 });
                 update();
             }
             else    
                 alert("Select at least 1 participant");
+            update();
         }
 
         const updateInfo = () => {
@@ -293,11 +297,11 @@ class Model extends Component {
                                     <div className={classes.Title}>Select Interview Duration (In Minutes)</div>
 
                                     <Slider 
-                                        min={20} defaultValue={this.state.interviewDuration} marks={{ 20: 20, 40: 40, 60: 60, 85: 100, 100: 120 }} step={null}
-                                        onChange={(newDuration)=>{
-                                            this.setState({interviewDuration: newDuration});
-                                        }}
-                                    />
+                                     min={0} defaultValue={((this.state.interviewDuration/15)-1)*10} marks={this.state.marks} step={null}
+                                     onChange={(newDuration)=>{
+                                        this.setState({interviewDuration: ((newDuration/10)+1)*15});
+                                     }}
+                                />
                                 </div>
                             </div>
                             <div onClick={() => updateInfo()} className={classes.addBtn}>UPDATE INFO</div>

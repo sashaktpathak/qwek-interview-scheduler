@@ -1,4 +1,5 @@
 exports.formatDate = (d) => {
+        d.setDate(d.getDate()+1);
         var month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
