@@ -38,13 +38,15 @@ exports.getAllCandidates = (req, res) => {
 };
 
 exports.bookCandidates = (req, res) => {
+    console.log(req.body);
     let insertValues = [];
     insertValues.push(req.body.time);
     insertValues.push(req.body.date);
     insertValues.push(parseInt(req.body.duration));
     insertValues.push(0);
     insertValues = [insertValues];
-    let participants = stringToArray(req.body.participantsList);
+    let participants = req.body.participantsList;
+    //let participants = stringToArray(req.body.participantsList);
     let query = `SELECT email, booked from participants where email in (${db.escape(participants)})`;
     db.query(query, (err, result)=>{
         if(err) throwError(err, res, {});
@@ -93,6 +95,7 @@ exports.deleteCandidate = (req, res) => {
 }
 
 exports.updateBooking = (req, res) => {
+    console.log(req.body);
     let query = `UPDATE booking set time='${req.body.time.trim()}', date='${req.body.date.trim()}', duration=${req.body.duration} where id = ${req.body.booking_id}`;
     db.query(query, (err, result)=>{
         if(err) throwError(err, res, {status: 0});
@@ -115,7 +118,7 @@ exports.showBookings = (req, res) => {
 }
 
 exports.deleteBooking = (req, res) => {
-    let query = `DELETE FROM booking where id=${req.body.booking_id}`;
+    let query = `DELETE FROM booking where id=${req.body.bookingId}`;
     db.query(query, (err, result)=>{
         if(err) throwError(err, res, {status: 0});
         res.send({
@@ -124,3 +127,46 @@ exports.deleteBooking = (req, res) => {
         });
     });
 }
+
+exports.showBookingsPerId = (req, res) => {
+    let query = `select username, email, booking_id, time, date, duration from participants p inner join booking b on p.booking_id = b.id where p.booking_id=${req.body.booking_id} order by booking_id`;
+    db.query(query, (err, result)=>{
+        if(err) throwError(err, res, {status: 0});
+        res.send({
+            status: 1,
+            data: result
+        });
+    });
+}
+
+exports.addCandidate = (req, res) => {
+    console.log(req.body);
+    
+    let participants = req.body.participantsList;
+    //let participants = stringToArray(req.body.participantsList);
+    let query = `SELECT email, booked from participants where email in (${db.escape(participants)})`;
+    db.query(query, (err, result)=>{
+        if(err) throwError(err, res, {});
+        console.log(result);
+
+        for(row in result){
+            if(result[row].booked == 1){
+                res.send({
+                    status: 0,
+                    msg: "Participant(s) already booked!"
+                });
+                return;
+            }
+        }
+        let updateQuery = `UPDATE participants SET booked=1, booking_id=${req.body.bookingId} where email in (${db.escape(participants)})`;
+        db.query(updateQuery, (err, updateResult) => {
+            if(err) throwError(err, res, {});
+                res.send({
+                    status: 1,
+                    msg: "success"
+                });
+        });
+    });
+}
+
+exports.updateBooking

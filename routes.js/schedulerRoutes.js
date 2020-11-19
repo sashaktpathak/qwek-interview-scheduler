@@ -29,13 +29,23 @@ router.get('/showAllBookings', function(req, res){
 
 //Delete a booking
 router.post('/deleteBooking', function(req, res){
-    let participantsList = schedulerController.stringToArray(req.body.participantsList);
+    let participantsList = req.body.participantsList;
     req.body.specialDelete = true;
     participantsList.forEach((participant) => {
         req.body.removeEmail = participant;
         schedulerController.deleteCandidate(req, res);
     });
     schedulerController.deleteBooking(req, res);
+});
+
+// Get Candidates for given booking Id
+router.post('/allBookingPerId', function(req, res){
+    schedulerController.showBookingsPerId(req, res);
+});
+
+// Add Candidate to given booking Id
+router.post('/addCandidate', function(req, res){
+    schedulerController.addCandidate(req, res);
 });
 
 module.exports = router;
