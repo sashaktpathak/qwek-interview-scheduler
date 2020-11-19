@@ -3,22 +3,33 @@ import classes from './Schedules.module.css';
 import MaterialTable from 'material-table'
 import Candidate from '../../components/Candidate/Candidate';
 import axios from '../../axios';
+import Model from '../../components/Model/Model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { sqlToDate } from '../../helper/utils';
 
-const editFunction = (e) => {
-    let bookingEle = e.target.nextSibling;
 
-    if(e.target.nextSibling == null)
-        bookingEle = e.target.parentElement.nextSibling;
-    console.log(bookingEle.value);
-}
 
 class Schedule extends Component {
     
     state={
-        details: []
+        details: [],
+        editing: false,
+        editingBookingId: null,
+        editFunction: (e) => {
+            let bookingEle = e.target.nextSibling;
+            console.log(e.target);
+            if(e.target.nextSibling == null)
+                bookingEle = e.target.parentElement.nextSibling;
+            console.log(bookingEle.value);
+            this.setState({editing: true, editingBookingId: bookingEle.value});
+        },
+        closeFunction: (e) => {
+            this.setState({editing: false});
+        }
     };
+
+ 
 
     componentDidMount() {
         axios.get('/showAllBookings')
@@ -31,7 +42,7 @@ class Schedule extends Component {
             data.forEach(row => {
                 if(prev !== row.booking_id){
                     if(users.length > 0 && temp !== {}){
-                        temp['edit'] = <div className={classes.editBtn} onClick={(e)=>editFunction(e)}>
+                        temp['edit'] = <div className={classes.editBtn} onClick={(e)=>this.state.editFunction(e)}>
                             <FontAwesomeIcon icon={faEdit}/>
                             <input name="booking_id" className="booking_id" value={temp['booking_id']} type="hidden"/>
                         </div>
@@ -43,7 +54,7 @@ class Schedule extends Component {
                     prev = row.booking_id;
                 }
                 temp['time'] = row.time;
-                temp['date'] = row.date;
+                temp['date'] = sqlToDate(row.date);
                 temp['duration'] = row.duration;
                 temp['booking_id'] = row.booking_id;
                 users.push({
@@ -52,7 +63,7 @@ class Schedule extends Component {
                 });
             });
             if(users.length > 0 && temp !== {}){
-                temp['edit'] = <div className={classes.editBtn} onClick={(e)=>editFunction(e)} >
+                temp['edit'] = <div className={classes.editBtn} onClick={(e)=>this.state.editFunction(e)} >
                     <FontAwesomeIcon icon={faEdit}/>
                     <input name="booking_id" className="booking_id" value={temp['booking_id']} type="hidden"/>
                 </div>
@@ -86,8 +97,12 @@ class Schedule extends Component {
             row['participants'] = <div className={classes.candidateGroup}>{row['participants']}</div>
             options.push(row);
         });
+        let model = null;
+        if(this.state.editing)
+            model = <Model closeFunction={this.state.closeFunction} bookingId={this.state.editingBookingId} />;
         return (
             <div className={classes.ScheduleBox}>
+                {model}
                 <MaterialTable
                     columns={[
                         { title: 'Participants', field: 'participants' },

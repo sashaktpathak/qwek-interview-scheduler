@@ -65,3 +65,18 @@
     padding: 10px;
     margin-top: 20px;
 }
+
+.scheduleBtn{
+    padding: 10px 20px;
+    margin: 0px;
+    margin-top: 10px;
+    background-color: #0E75C4;
+    text-align: center;
+    color: white;
+    box-shadow: 2px 2px 2px #1065a7;
+    border-radius: 5px;
+    cursor: pointer;
+    max-width: 100px;
+    max-height: 50px;
+    font-weight: bold;
+}

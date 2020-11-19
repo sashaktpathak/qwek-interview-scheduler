@@ -10,3 +10,12 @@ exports.formatDate = (d) => {
 
     return [year, month, day].join('-');
 }
+
+exports.sqlToDate = (date) => {
+    return date.split('T')[0];
+};
+
+exports.jsDate = (date) => {
+    var dateParts = date.split("-");
+    return new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0,2));
+}

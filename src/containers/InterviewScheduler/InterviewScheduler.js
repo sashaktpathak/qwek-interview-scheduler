@@ -125,7 +125,7 @@ class InterviewScheduler extends Component {
 
                 </div>
                 <div>
-                    <button onClick={()=>ScheduleInterview()}>Schedule!</button>
+                    <div onClick={()=>ScheduleInterview()} className={classes.scheduleBtn}>Schedule!</div>
                 </div>
             </div>
         );
