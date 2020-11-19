@@ -1,0 +1,22 @@
+.Layout {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.NavBar {
+    flex: 2;
+    padding: 0px;
+    margin: 0px;
+    background-color: #FFFFFF;
+}
+
+.Dashboard {
+    flex: 7;
+    padding: 0px;
+    margin: 0px;
+    background-color: #FCFCFC;
+}

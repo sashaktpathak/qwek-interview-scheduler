@@ -1,0 +1,27 @@
+.SideBar {
+    border-right: 1px solid #f2f2f2;
+    height: 100%;
+    padding: 10;
+    margin: 0px;
+    margin-left: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.lineDivider {
+    height: 1px;
+    width: 90%;
+    position: relative;
+    left: 5%;
+    margin-bottom: 3px;
+    background: #dedede;
+}
+
+.heading {
+    margin-left: 10px;
+    margin-bottom: 7px;
+}
+
+.heading > h3 {
+    margin-bottom: 5px;
+}
