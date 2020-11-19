@@ -17,10 +17,12 @@ const SideBar = (props) => {
             <div className={classes.lineDivider}></div>
             <NavigationItems 
             title="Interview Scheduler"
+            link="/"
             icon={clockIcon}
             />
             <NavigationItems 
             title="Upcoming Interviews"
+            link="/records"
             icon={listIcon}
             />
         </div>

@@ -1,0 +1,21 @@
+.ScheduleBox {
+    margin: 0px;
+    padding: 10px;   
+    font-family: 'Lato', sans-serif;
+}
+
+.ScheduleTable{
+    padding: 10px;
+}
+
+.candidateGroup {
+    margin: 0px;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    max-width: 75%;
+}
+
+.editBtn {
+    cursor: pointer;
+}

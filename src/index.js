@@ -2,11 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { BrowserRouter } from 'react-router-dom';
+import { positions, Provider as AlertProvider, Provider } from 'react-alert';
+import AlertTemplate from 'react-alert-template-basic';
 import reportWebVitals from './reportWebVitals';
+
+
+const reactAlertOptions = {
+  position: positions.middle,
+  offset: '50px',
+  timeout: 15000,
+  containerStyle: {
+    zIndex: 100,
+  }
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider>
+      <AlertProvider template={AlertTemplate} {...reactAlertOptions}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AlertProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

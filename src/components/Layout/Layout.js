@@ -1,7 +1,9 @@
 import React from 'react';
 import classes from './Layout.module.css';
 import NavBar from '../Navigations/SideBar/SideBar';
+import { Switch, Route } from 'react-router-dom';
 import InterviewScheduler from '../../containers/InterviewScheduler/InterviewScheduler';
+import Schedule from '../../containers/Schedules/Schedules';
 
 const Layout = (props) => {
     return (
@@ -10,7 +12,14 @@ const Layout = (props) => {
                 <NavBar />
             </div>
             <div className={classes.Dashboard}>
-                <InterviewScheduler />
+                <Switch>
+                    <Route path="/records">
+                        <Schedule />
+                    </Route>
+                    <Route path="/">
+                        <InterviewScheduler />
+                    </Route>
+                </Switch>
             </div>
         </div>
     );

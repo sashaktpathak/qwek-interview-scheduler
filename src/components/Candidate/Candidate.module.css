@@ -1,0 +1,11 @@
+.candidate {
+    font-weight: 600;
+    color: white;
+    background-color: #0e75c4;
+    width: 150px;
+    box-shadow: 2px 2px 2px #1065a7;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px 5px;
+    margin: 2px 5px;
+}

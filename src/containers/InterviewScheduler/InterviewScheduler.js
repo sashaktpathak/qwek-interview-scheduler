@@ -3,9 +3,19 @@ import Select from "react-dropdown-select";
 import classes from './InterviewScheduler.module.css';
 import DatePicker from "react-datepicker";
 import Timekeeper from 'react-timekeeper';
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
+import axios from '../../axios';
+import { formatDate } from '../../helper/utils';
+import qs from 'qs';
 import 'rc-slider/assets/index.css';
 import "react-datepicker/dist/react-datepicker.css";
+
+const config = {
+
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+}
 
 class InterviewScheduler extends Component {
     state = {
@@ -14,51 +24,41 @@ class InterviewScheduler extends Component {
         showTime: false,
         interviewDuration: 60,
         optionRenderer: true,
-        namesList: [
-            "Sashakt Pathak",
-            "Anil Sharma",
-            "Mukesh Garg",
-            "Rohan Saraswat",
-            "Akhilesh Mishra",
-            "Naina Gupta",
-            "Arushi Agarwal",
-            "Shubham Pandey",
-            "Shubham Aggarwal"
-        ],
-        names: [{
-            id: 1,
-            username: "Sashakt Pathak",
-            email: "psashakt@gmail.com"
-        },
-        {
-            id: 2,
-            username: "Anil Sharma",
-            email: "anilsharma@gmail.com"
-        },
-        {
-            id: 2,
-            username: "Mukesh Garg",
-            email: "mukesh12@gmail.com"
-        },
-        {
-            id: 2,
-            username: "Shubham Pandey",
-            email: "shubhampandey@gmail.com"
-        },
-        {
-            id: 2,
-            username: "Shubham Aggarwal",
-            email: "shubaga@gmail.com"
-        }],
+        names: [],
         selectedNames: []
     }
     
+    componentDidMount(){
+        axios.get('/getCandidates')
+        .then((data) => {
+            this.setState({names: data.data});
+        });
+    }
+
     render(){
-        const selectedUsers = [];
-        this.state.selectedNames.forEach(value=>{
-            if(value)
-                selectedUsers.push(<li key={value.email + Math.random().toString(36).substring(7)}>{value.email}</li>);     
-        })
+
+        //Execute booking interview process
+        const ScheduleInterview = () => {
+            const selectedEmails = [];
+            this.state.selectedNames.forEach(value=>{
+                if(value)
+                selectedEmails.push(value.email);     
+            })
+            
+            let payload = {
+                time: this.state.startTime,
+                date: formatDate(this.state.selectedDate),
+                duration: this.state.interviewDuration,
+                participantsList: selectedEmails
+            };
+            console.log(this.state, payload);
+            payload = qs.stringify(payload);
+            axios.post('/bookCandidates', payload, config)
+            .then(data => {
+                console.log(data);
+            });
+        };
+
         return (
             <div className={classes.InterviewScheduler}>
                 
@@ -75,12 +75,6 @@ class InterviewScheduler extends Component {
                         onChange={(values) => this.setState((prevState)=>({selectedNames: values}))}
                     />
 
-                    <div>
-                        <ul>
-                            {selectedUsers}
-                        </ul>
-                    </div>
-                    
                     <div className={classes.InterviewInfo}>
                         <div className={classes.DateAndTime}>
                             <div className={classes.Date}>
@@ -131,7 +125,7 @@ class InterviewScheduler extends Component {
 
                 </div>
                 <div>
-                    <button>Schedule!</button>
+                    <button onClick={()=>ScheduleInterview()}>Schedule!</button>
                 </div>
             </div>
         );
