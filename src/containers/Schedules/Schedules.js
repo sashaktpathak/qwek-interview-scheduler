@@ -3,10 +3,20 @@ import classes from './Schedules.module.css';
 import MaterialTable from 'material-table'
 import Candidate from '../../components/Candidate/Candidate';
 import axios from '../../axios';
+import qs from 'qs';
 import Model from '../../components/Model/Model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { sqlToDate } from '../../helper/utils';
+
+
+const config = {
+
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+}
+
 
 class Schedule extends Component {
     
@@ -52,6 +62,7 @@ class Schedule extends Component {
                         temp['date'] = sqlToDate(row.date);
                         temp['duration'] = row.duration;
                         temp['booking_id'] = row.booking_id;
+                        temp['resume'] = row.resume;
                         users.push({
                             'username': row.username,
                             'email': row.email
@@ -78,6 +89,23 @@ class Schedule extends Component {
 
     render(){
 
+        const getFile = (e) => {
+            const filename = e.target.textContent;
+            let payload = {
+                filename: filename
+            };
+            payload = qs.stringify(payload);
+            axios.post('/mailing/getResume', payload, config)
+            .then(response =>{
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'resume.pdf'); 
+                document.body.appendChild(link);
+                link.click();
+            })
+        }
+
         let options = [];
         let disp = [];
         this.state.details.forEach(data => {
@@ -86,6 +114,7 @@ class Schedule extends Component {
             row['duration'] = data.duration;
             row['date'] = data.date;
             row['edit'] = data.edit;
+            row['resume'] = <div style={{cursor: 'pointer'}} onClick={(e)=>getFile(e)}>{data.resume}</div>;
             row['participants'] = [];
             data.participantsList.forEach(userData => {
                 row['participants'].push(
@@ -110,6 +139,7 @@ class Schedule extends Component {
                         { title: 'Date', field: 'date' },
                         { title: 'Time', field: 'time' },
                         { title: 'Duration', field: 'duration'},
+                        { title: 'Resume', field: 'resume'},
                         { title: 'Edit', field: 'edit'}
                     ]}
                     data={options}

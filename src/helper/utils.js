@@ -1,5 +1,5 @@
-exports.formatDate = (d) => {
-        d.setDate(d.getDate()+1);
+exports.formatDate = (d, mode = 1) => {
+        d.setDate(d.getDate()+mode);
         var month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();

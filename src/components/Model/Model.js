@@ -124,13 +124,12 @@ class Model extends Component {
             }
             else    
                 alert("Select at least 1 participant");
-            update();
         }
 
         const updateInfo = () => {
             let payload = {
                 time: this.state.startTime,
-                date: formatDate(this.state.selectedDate),
+                date: formatDate(this.state.selectedDate, 0),
                 duration: this.state.interviewDuration,
                 booking_id: this.props.bookingId
             };

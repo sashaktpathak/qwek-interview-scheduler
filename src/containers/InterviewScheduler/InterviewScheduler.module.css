@@ -89,3 +89,8 @@
     max-height: 50px;
     font-weight: bold;
 }
+
+.UploadBtn {
+    visibility: hidden;
+    width: 0px;
+}

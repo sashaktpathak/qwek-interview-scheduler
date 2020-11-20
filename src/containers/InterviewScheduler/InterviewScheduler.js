@@ -25,7 +25,9 @@ const defaultState = {
     optionRenderer: true,
     names: [],
     selectedNames: [],
-    marks: {0: 15, 10: 30, 20: 45, 30: 60, 40: 75, 50: 90, 60: 105, 70: 120, 80: 135, 90: 150, 100: 165}
+    marks: {0: 15, 10: 30, 20: 45, 30: 60, 40: 75, 50: 90, 60: 105, 70: 120, 80: 135, 90: 150, 100: 165},
+    fileName: null,
+    resumeFile: null,
 };
 class InterviewScheduler extends Component {
     state = {
@@ -53,6 +55,30 @@ class InterviewScheduler extends Component {
             })
         };
 
+        const submitForm = (e) =>{
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('userResume', this.state.resumeFile);
+            const formConfig = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            }
+            axios.post('/mailing/uploadResume', formData, formConfig)
+            .then(response => {
+                if(response.data.status === 0)
+                    alert("Oops, some error occured");
+                else{
+                    this.setState({fileName: response.data.filename});
+                    alert("File uploaded successfully");
+                }
+            });
+        }
+
+        const fileChange = (e) =>{
+            this.setState({resumeFile: e.target.files[0]});
+        }
+
         //Execute booking interview process
         const ScheduleInterview = () => {
             const selectedEmails = [];
@@ -63,8 +89,9 @@ class InterviewScheduler extends Component {
             
             let payload = {
                 time: this.state.startTime,
-                date: formatDate(this.state.selectedDate),
+                date: formatDate(this.state.selectedDate, 0),
                 duration: this.state.interviewDuration,
+                filename: this.state.fileName,
                 participantsList: selectedEmails
             };
             if(payload.participantsList.length >=2 ){
@@ -72,9 +99,11 @@ class InterviewScheduler extends Component {
                 axios.post('/bookCandidates', payload, config)
                 .then(data => {
                     alert(data.data.msg);
-                    if(window.confirm('Send E-Mail to participants?'))
-                        sendMail(payload);
-                    this.setState((prevState) => ({...defaultState, names: prevState.names}));
+                    if(data.data.status === 1){
+                        if(window.confirm('Send E-Mail to participants?'))
+                            sendMail(payload);
+                        this.setState((prevState) => ({...defaultState, names: prevState.names}));
+                    }
                 });
             }
             else    
@@ -129,8 +158,12 @@ class InterviewScheduler extends Component {
                         </div>
                         <div className={classes.UploadAndDuration}>
                             <div className={classes.UploadBox}>
-                                <span>Upload Resume</span>
+                                <form>
+                                    <span onClick={()=>document.getElementById('UploadField').click()}>Upload Resume</span>
+                                    <input type="file" name="userResume" onChange={fileChange}  id="uploadField" className={classes.uploadBtn}/>
+                                </form>
                             </div>
+                            <input type="submit" onClick={(e) => submitForm(e)} value="Upload" className={classes.scheduleBtn}/>
                         
                             <div className={classes.InterviewDuration}>
                                 <div className={classes.Title}>Select Interview Duration (In Minutes)</div>
