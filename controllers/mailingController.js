@@ -1,4 +1,4 @@
-const transporter = require('../nodeMailer/nodeMailer');
+const transporter = require('../utils/nodeMailer');
 
 const mailStructure = {
     from: 'qwekmailer@gmail.com',

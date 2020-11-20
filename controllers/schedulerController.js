@@ -44,6 +44,7 @@ exports.bookCandidates = (req, res) => {
     insertValues.push(req.body.date);
     insertValues.push(parseInt(req.body.duration));
     insertValues.push(0);
+    insertValues.push(req.body.filename);
     insertValues = [insertValues];
     let participants = req.body.participantsList;
     //let participants = stringToArray(req.body.participantsList);
@@ -61,7 +62,7 @@ exports.bookCandidates = (req, res) => {
                 return;
             }
         }
-        let sql = "INSERT INTO booking (time, date, duration, status) VALUES ?";
+        let sql = "INSERT INTO booking (time, date, duration, status, resume) VALUES ?";
         db.query(sql, [insertValues], (err, result) => {
             if(err) throwError(err, res, {});
             let updateQuery = `UPDATE participants SET booked=1, booking_id=${result.insertId} where email in (${db.escape(participants)})`;
@@ -107,7 +108,7 @@ exports.updateBooking = (req, res) => {
 }
 
 exports.showBookings = (req, res) => {
-    let query = `select username, email, booking_id, time, date, duration from participants p inner join booking b on p.booking_id = b.id order by booking_id`;
+    let query = `select username, email, booking_id, time, date, duration, resume from participants p inner join booking b on p.booking_id = b.id order by booking_id`;
     db.query(query, (err, result)=>{
         if(err) throwError(err, res, {status: 0});
         res.send({
